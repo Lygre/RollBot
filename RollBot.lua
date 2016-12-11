@@ -307,7 +307,9 @@ function get_active_rolls()
 		for _,bid in pairs(player.buffs) do
 			local buff = res.buffs[bid].en
 			if buff:contains('Roll') then
-				active_rolls[buff] = {name=buff,value=0}
+				if not active_rolls[buff] then
+					active_rolls[buff] = {name=buff,value=0}
+				end
 			end
 		end
 	end
