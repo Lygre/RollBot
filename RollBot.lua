@@ -2,7 +2,7 @@ _addon.name = 'RollBot'
 _addon.author = 'Lygre'
 _addon.commands = {'rollbot','rb','rbot'}
 _addon.version = '1.0.1'
-_addon.lastUpdate = '2016.12.03'
+_addon.lastUpdate = '2016.12.10'
 
 require('luau')
 packets = require('packets')
@@ -37,8 +37,8 @@ local profiles = {}
 -- local focusMembers = {}
 
 function math.round(num, prec)
-    local mult = 10^(prec or 0)
-    return (math.floor(num * mult + 0.5) / mult)
+	local mult = 10^(prec or 0)
+	return (math.floor(num * mult + 0.5) / mult)
 end
 
 profiles = {
@@ -97,7 +97,13 @@ function loadProfile(pname)
 	crookedRoll = profile.crooked[1]
 	-- print(set_rolls[1],set_rolls[2],crookedRoll)
 end
--- windower.register_event('lose buff',)
+windower.register_event('lose buff', function(buff_id)
+	for k,v in pairs(active_rolls) do
+		if res.buffs[buff_id].en == k then
+			active_rolls:remove(k)
+		end
+	end
+end)
 --[[
 Recreates rollInfoTemp into table rollInfo
 ]]--
