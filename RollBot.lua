@@ -249,22 +249,27 @@ function roll()
 						if get_recast('Snake Eye') < get_recast('Phantom Roll') then
 							if check_timer('Snake Eye') and not buffactive('Snake Eye') then
 								windower.send_command('input /ja "Snake Eye" <me>;wait 1;input /ja "Double-Up" <me>')
+								check_probabilities('Double-Up')
 							end
 						else 
 							windower.send_command('input /ja "Double-Up" <me>')
+							check_probabilities('Double-Up')
 						end
 						-- if get_recast('Snake Eye') < get_recast('Phantom Roll') and (get_recast('Phantom Roll') - get_recast('Snake Eye')) > 2 then
 						-- end
 					elseif rollnum == RollLuckyUnlucky[currentRoll][2] then
 						if check_timer('Snake Eye') and not buffactive('Snake Eye') then
 							windower.send_command('input /ja "Snake Eye" <me>;wait 1;input /ja "Double-Up" <me>')
+							check_probabilities('Double-Up')
 						end 
 					elseif rollnum == 10 then
 						if check_timer('Snake Eye') and not buffactive('Snake Eye') then
 							windower.send_command('input /ja "Snake Eye" <me>;wait 1;input /ja "Double-Up" <me>')
+							check_probabilities('Double-Up')
 						end
 					elseif rollnum < 6 and rollnum ~= RollLuckyUnlucky[currentRoll][1] then
 						windower.send_command('input /ja "Double-Up" <me>')
+						check_probabilities('Double-Up')
 					end
 				end
 			end
@@ -272,6 +277,36 @@ function roll()
 	-- end
 end
 
+--[[	Calculates probabilities based on present conditions	]]--
+function check_probabilities(action)
+	if action == 'Double-Up' then
+		for k,v in pairs(active_rolls) do
+			if currentRoll == active_rolls[k].name and buffactive("Double-Up Chance") then
+				local luckdist = RollLuckyUnlucky[currentRoll][1] - active_rolls[k].value
+				local baddist = RollLuckyUnlucky[currentRoll][2] -  active_rolls[k].value
+				local luckprob = 0
+				if math.sgn(luckdist) == 1 then
+					for hypotheticalRoll=1,luckdist,1 do
+						for i=luckdist-(luckdist-hypotheticalRoll),1,-1 do
+							for u=0,luckdist-1,1 do
+								if i+u == RollLuckyUnlucky[currentRoll][1] then
+									luckprob = luckprob + (hypotheticalRoll*0.167)
+									print(luckprob)
+								end
+							end
+						end
+					end
+				end
+				if active_rolls[k].value < 6 then
+					atc('Chance of Busting: 0%')
+				else
+					local bchance = (active_rolls[k].value + 6 - 11)/6
+					atc('Chance of Busting: '..bchance'')
+				end
+			end
+		end
+	end
+end
 --[[
 	Returns recast for specified ability in seconds
 ]]--
@@ -360,9 +395,6 @@ function check_focus_distance()
 	end
 	return true
 end
--- windower.register_event('lose buff', function()
-
--- end)
 --[[
 	Returns true if ability recast is ready, false otherwise
 ]]--
@@ -401,6 +433,9 @@ function buffactive(...)
 	return false
 end
 
+function atc(text)
+	windower.add_to_chat(204, text)
+end
 ---Need to add recognition of rolls from others being applied to us, and a function to remove said rolls from active_rolls table when they wear
 windower.register_event('action', function(act)
 	if act.category == 6 and table.containskey(rollInfo, act.param) then
