@@ -100,7 +100,7 @@ end
 windower.register_event('lose buff', function(buff_id)
 	for k,v in pairs(active_rolls) do
 		if res.buffs[buff_id].en == k then
-			table.remove(active_rolls,k)
+			table.remove(active_rolls[k],1)
 		end
 	end
 end)
@@ -356,6 +356,7 @@ function check_focus_distance()
 			end
 		end
 	end
+	return false
 end
 -- windower.register_event('lose buff', function()
 
@@ -410,10 +411,10 @@ windower.register_event('action', function(act)
 			windower.add_to_chat(204, '*-*-*-*-*-*-*-*-* [ '..boo..' ] *-*-*-*-*-*-*-*-*')
 			for i,v in pairs(set_rolls) do
 				if set_rolls[i] == boo then
-					if table.length(my_rolls) < 3 then
+					if table.count(my_rolls) < 3 then
 						table.append(my_rolls,{name = boo, value = rollnum})
-						active_rolls[boo] = {name = boo, value = rollnum}
-						print(my_rolls[boo].name,my_rolls[boo].value)
+						active_rolls[v] = {name = v, value = rollnum}
+						-- print(my_rolls[boo].name,my_rolls[boo].value)
 						windower.add_to_chat(204, '*-*-*-*-*-*-*-*-* [ '..set_rolls[i]..' = '..rollnum..' ] *-*-*-*-*-*-*-*-*')
 					end
 				end
