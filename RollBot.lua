@@ -2,7 +2,7 @@ _addon.name = 'RollBot'
 _addon.author = 'Lygre'
 _addon.commands = {'rollbot','rb','rbot'}
 _addon.version = '1.0.1'
-_addon.lastUpdate = '2016.12.03'
+_addon.lastUpdate = '2016.12.10'
 
 require('luau')
 packets = require('packets')
@@ -37,8 +37,8 @@ local profiles = {}
 -- local focusMembers = {}
 
 function math.round(num, prec)
-    local mult = 10^(prec or 0)
-    return (math.floor(num * mult + 0.5) / mult)
+	local mult = 10^(prec or 0)
+	return (math.floor(num * mult + 0.5) / mult)
 end
 
 profiles = {
@@ -97,7 +97,13 @@ function loadProfile(pname)
 	crookedRoll = profile.crooked[1]
 	-- print(set_rolls[1],set_rolls[2],crookedRoll)
 end
--- windower.register_event('lose buff',)
+windower.register_event('lose buff', function(buff_id)
+	for k,v in pairs(active_rolls) do
+		if res.buffs[buff_id].en == k then
+			table.remove(active_rolls,k)
+		end
+	end
+end)
 --[[
 Recreates rollInfoTemp into table rollInfo
 ]]--
@@ -405,10 +411,10 @@ windower.register_event('action', function(act)
 			for i,v in pairs(set_rolls) do
 				if set_rolls[i] == boo then
 					if table.length(my_rolls) < 3 then
-						table.append(my_rolls,{name = boo, value = rollNum})
-						active_rolls[boo] = {name = boo, value = rollNum}
-						-- print(my_rolls[boo].name,my_rolls[boo].value)
-						windower.add_to_chat(204, '*-*-*-*-*-*-*-*-* [ '..set_rolls[i]..' = '..rollNum..' ] *-*-*-*-*-*-*-*-*')
+						table.append(my_rolls,{name = boo, value = rollnum})
+						active_rolls[boo] = {name = boo, value = rollnum}
+						print(my_rolls[boo].name,my_rolls[boo].value)
+						windower.add_to_chat(204, '*-*-*-*-*-*-*-*-* [ '..set_rolls[i]..' = '..rollnum..' ] *-*-*-*-*-*-*-*-*')
 					end
 				end
 			end
@@ -417,7 +423,7 @@ windower.register_event('action', function(act)
 			for i=0,5,1 do
 				if party['p'..i].mob.id == rollActor then
 					-- print('no wai')
-					active_rolls[boo] = {name=boo, value = rollNum}
+					active_rolls[boo] = {name=boo, value = rollnum}
 					break 
 				end
 			end  
